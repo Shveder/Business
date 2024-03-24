@@ -52,3 +52,4 @@ C:\Users\User\Desktop\Курсовая по РППБА\Business monitoring\Busin
 C:\Users\User\Desktop\Курсовая по РППБА\Business monitoring\Business monitoring\obj\Debug\net6.0\Business monitoring.pdb
 C:\Users\User\Desktop\Курсовая по РППБА\Business monitoring\Business monitoring\obj\Debug\net6.0\Business monitoring.genruntimeconfig.cache
 C:\Users\User\Desktop\Курсовая по РППБА\Business monitoring\Business monitoring\obj\Debug\net6.0\ref\Business monitoring.dll
+C:\Users\User\Desktop\Курсовая по РППБА\Business monitoring\Business monitoring\obj\Debug\net6.0\Business monitoring.sourcelink.json
