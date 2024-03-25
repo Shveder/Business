@@ -1,8 +1,8 @@
 ﻿namespace Business_monitoring.Exceptions;
 
-public class InvalidDataException : Exception
+public class IncorrectDataException : Exception
 {
-    public InvalidDataException(string? message) : base(message)
+    public IncorrectDataException(string? message) : base(message)
     {
     }
 }

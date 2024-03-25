@@ -7,4 +7,5 @@ public interface IUserService
 {
     public Task CreateUserAsync(CreateUserRequest request);
     public Task<UserModel> Login(LoginRequest request);
+    public Task ChangePassword(ChangePasswordRequest request);
 }

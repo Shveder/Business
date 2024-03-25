@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using System.Security.Authentication;
 using Business_monitoring.DTO;
+using Business_monitoring.Exceptions;
 
 namespace Business_monitoring.MiddleWares;
 
@@ -23,7 +24,7 @@ public class ExceptionHandlingMiddleware
         {
             await _next(httpContext);
         }
-        catch (InvalidDataException ex)
+        catch (IncorrectDataException ex)
         {
             await HandleExceptionAsync(httpContext,
                 ex.Message,

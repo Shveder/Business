@@ -1,5 +1,5 @@
-﻿using Business_monitoring.Data;
-using Business_monitoring.DTO;
+﻿using Business_monitoring.DTO;
+using Business_monitoring.Exceptions;
 using Business_monitoring.Models;
 using Business_monitoring.Repository.Interfaces;
 using Business_monitoring.Services.Interfaces;
@@ -22,16 +22,26 @@ public class UserService : IUserService
     
     public async Task CreateUserAsync(CreateUserRequest request)
     {
-        var user = new UserModel(Guid.NewGuid(), request.Login, request.Password, "1323", 1, 0, false, false);
+        var user = new UserModel
+        {
+            Id = Guid.NewGuid(),
+            Login = request.Login,
+            Password = request.Password,
+            Salt = "123",
+            Role = 1,
+            Balance = 0,
+            IsDeleted = false,
+            IsBlocked = false
+        };
         
         if (request.Password != request.RepeatPassword)
-            throw new InvalidDataException("Пароли не совпадают");
+            throw new IncorrectDataException("Пароли не совпадают");
         if(await IsLoginUnique(request.Login))
-            throw new InvalidDataException("Пользователь с таким логином уже есть в системе");
+            throw new IncorrectDataException("Пользователь с таким логином уже есть в системе");
         if(request.Login.Length is < 4 or > 32)
-            throw new InvalidDataException("Длина логина должна быть от 4 до 32 символов");
+            throw new IncorrectDataException("Длина логина должна быть от 4 до 32 символов");
         if(request.Password.Length is < 4 or > 32)
-            throw new InvalidDataException("Длина пароля должна быть от 4 до 32 символов");
+            throw new IncorrectDataException("Длина пароля должна быть от 4 до 32 символов");
 
         await _repository.Add(user);
         await _repository.SaveChangesAsync();
@@ -43,7 +53,7 @@ public class UserService : IUserService
         var user = await _repository.Get<UserModel>(model => model.Login == request.Login && model.Password == request.Password).FirstOrDefaultAsync();
 
         if (user == null)
-            throw new InvalidDataException("Неверный логин или пароль");
+            throw new IncorrectDataException("Неверный логин или пароль");
         
         if (user.IsBlocked)
             throw new AuthorizationException("Аккаунт заблокирован");
@@ -53,8 +63,34 @@ public class UserService : IUserService
 
         return user;
     }
-    
+
+    public async Task ChangePassword(ChangePasswordRequest request)
+    {
+        var user = await _repository.Get<UserModel>(model => model.Id == request.Id).FirstOrDefaultAsync();
+        if (!(request.PreviousPassword == user.Password))
+            throw new IncorrectDataException("Пароль неверный!");
+        if (request.NewPassword.Length is < 4 or > 32)
+            throw new IncorrectDataException("Пароль должен быть больше 4 и меньше 32 символов!");
         
+        user.Password = request.NewPassword;
+        
+        await _repository.Update(user);
+        await _repository.SaveChangesAsync();
+
+        await AddRecentPassword(user, request.PreviousPassword);
+    }
+
+    private async Task AddRecentPassword(UserModel user, string oldPassword)
+    {
+        var recentPassword = new RecentPasswords
+        {
+            Id = Guid.NewGuid(),
+            Password = oldPassword,
+            User = user
+        };
+        await _repository.Add(recentPassword);
+        await _repository.SaveChangesAsync();
+    }
 
     private async Task<bool> IsLoginUnique(string login)
     {
