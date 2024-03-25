@@ -1,9 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Business_monitoring.Models.Interfaces;
 
 namespace Business_monitoring.Models;
 
-public class Subscription : IModels
+public class Subscription : BaseEntity
 {
     [Key] public Guid Id { get; set; }
     [Required] public UserModel User { get; set; }
