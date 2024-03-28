@@ -177,6 +177,7 @@ public class UserService : IUserService
             throw new IncorrectDataException("Пароль должен быть больше 4 и меньше 32 символов!");
         
         user.Password = request.NewPassword;
+        user.DateUpdated = DateTime.UtcNow;
         
         await _repository.Update(user);
         await _repository.SaveChangesAsync();
