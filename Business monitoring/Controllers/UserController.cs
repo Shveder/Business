@@ -101,4 +101,23 @@ public class UserController : ControllerBase
         _logger.LogInformation($"Баланс пополнен на {request.Sum}");
         return Ok($"Баланс пополнен на {request.Sum}");
     }
+    
+    /// <summary>
+    ///     Get all businesses
+    /// </summary>
+    /// <remarks>
+    ///     Sample request:
+    ///     Get /User/GetBusinesses
+    /// </remarks>
+    /// <returns>
+    ///     200 OK 
+    /// </returns>
+    /// <response code="200">Got all businesses.</response>
+    [HttpGet("GetBusinesses")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetBusinesses()
+    {
+        _logger.LogInformation("Получен список бизнесов");
+        return Ok(await _userService.GetBusinesses());
+    }
 }

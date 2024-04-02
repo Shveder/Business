@@ -348,5 +348,8 @@ public class UserService : IUserService
             await _repository.SaveChangesAsync();
         }
     }
-    
+    public async Task<IQueryable<Business>> GetBusinesses()
+    {
+        return await Task.FromResult(_repository.GetAll<Business>().Include(b => b.Company));
+    }
 }

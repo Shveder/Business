@@ -1378,19 +1378,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\User\\.nuget\\packages\\": {}
+    "C:\\Users\\shved\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\User\\Desktop\\Курсовая по РППБА\\Business monitoring\\Business monitoring\\Business monitoring.csproj",
+      "projectUniqueName": "C:\\Users\\shved\\OneDrive\\Рабочий стол\\Курсовая по РППБА\\Business monitoring\\Business monitoring.csproj",
       "projectName": "Business monitoring",
-      "projectPath": "C:\\Users\\User\\Desktop\\Курсовая по РППБА\\Business monitoring\\Business monitoring\\Business monitoring.csproj",
-      "packagesPath": "C:\\Users\\User\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\User\\Desktop\\Курсовая по РППБА\\Business monitoring\\Business monitoring\\obj\\",
+      "projectPath": "C:\\Users\\shved\\OneDrive\\Рабочий стол\\Курсовая по РППБА\\Business monitoring\\Business monitoring.csproj",
+      "packagesPath": "C:\\Users\\shved\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\shved\\OneDrive\\Рабочий стол\\Курсовая по РППБА\\Business monitoring\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\User\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\shved\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [

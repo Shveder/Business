@@ -12,5 +12,5 @@ public interface IUserService
     public Task AddCreditCard(AddCardRequest request);
     public Task<IQueryable<Card>>GetCardList(Guid id);
     public Task ReplenishBalance(DepositRequest request);
-
+    public Task<IQueryable<Business>> GetBusinesses();
 }
