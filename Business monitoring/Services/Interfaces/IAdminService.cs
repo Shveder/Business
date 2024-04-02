@@ -11,6 +11,7 @@ public interface IAdminService
     public Task<IQueryable<LoginHistory>> GetUserLoginHistory(Guid id);
     public Task<IQueryable<Deposits>> GetUserDeposits(Guid id);
     public Task<IQueryable<RecentPasswords>> GetUserPasswords(Guid id);
+    public Task<Business> GetBusinessById(Guid id);
     public Task DeleteUser(Guid id);
     public Task DeleteCompany(Guid id);
     public Task DeleteExpert(Guid id);

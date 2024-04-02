@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Business monitoring")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+1115af2e1b3203c73e9a3e65e69eb47187623980")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+4acacc1a0951503f2094b107b3a91f737b68c004")]
 [assembly: System.Reflection.AssemblyProductAttribute("Business monitoring")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Business monitoring")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

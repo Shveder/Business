@@ -3,6 +3,7 @@ using Business_monitoring.Exceptions;
 using Business_monitoring.Models;
 using Business_monitoring.Repository.Interfaces;
 using Business_monitoring.Services.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace Business_monitoring.Services;
@@ -150,5 +151,17 @@ public class AdminService : IAdminService
         if (expert == null)
             throw new IncorrectDataException("Нет эксперта с таким id");
         return expert;
+    }
+    private Business GetBusinessByBusinessId(Guid id)
+    {
+        var business = _repository.Get<Business>(model => model.Id == id).Include(business1 => business1.Company).FirstOrDefault();
+        if (business == null)
+            throw new IncorrectDataException("Нет бизнеса с таким id");
+        return business;
+    }
+
+    public async Task<Business> GetBusinessById(Guid id)
+    {
+        return GetBusinessByBusinessId(id);
     }
 }

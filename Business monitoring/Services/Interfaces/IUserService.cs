@@ -13,4 +13,7 @@ public interface IUserService
     public Task<IQueryable<Card>>GetCardList(Guid id);
     public Task ReplenishBalance(DepositRequest request);
     public Task<IQueryable<Business>> GetBusinesses();
+    public Task<IQueryable<Business>> GetBusinessesByCompany(Guid id);
+    public Task<IQueryable<ExpertView>> GetExpertViewsByBusiness(Guid id);
+    public Task<IQueryable<ExpertView>> GetExpertViewsByExpert(Guid id);
 }

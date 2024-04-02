@@ -352,4 +352,40 @@ public class UserService : IUserService
     {
         return await Task.FromResult(_repository.GetAll<Business>().Include(b => b.Company));
     }
+    private Company GetCompanyById(Guid id)
+    {
+        var company = _repository.Get<Company>(model => model.Id == id).FirstOrDefault();
+        if (company == null)
+            throw new IncorrectDataException("Нет компании с таким id");
+        return company;
+    }
+    public async Task<IQueryable<Business>> GetBusinessesByCompany(Guid id)
+    {
+        var company = GetCompanyById(id);
+        return await Task.FromResult(_repository.Get<Business>(business => business.Company == company).Include(b => b.Company));
+    }
+    private Business GetBusinessById(Guid id)
+    {
+        var business = _repository.Get<Business>(model => model.Id == id).FirstOrDefault();
+        if (business == null)
+            throw new IncorrectDataException("Нет бизнеса с таким id");
+        return business;
+    }
+    public async Task<IQueryable<ExpertView>> GetExpertViewsByBusiness(Guid id)
+    {
+        var business = GetBusinessById(id);
+        return await Task.FromResult(_repository.Get<ExpertView>(view =>  view.Business == business).Include(b => b.Business).Include(b => b.Expert));
+    }
+    private Expert GetExpertById(Guid id)
+    {
+        var expert = _repository.Get<Expert>(model => model.Id == id).FirstOrDefault();
+        if (expert == null)
+            throw new IncorrectDataException("Нет эксперта с таким id");
+        return expert;
+    }
+    public async Task<IQueryable<ExpertView>> GetExpertViewsByExpert(Guid id)
+    {
+        var expert = GetExpertById(id);
+        return await Task.FromResult(_repository.Get<ExpertView>(view =>  view.Expert == expert).Include(b => b.Business));
+    }
 }

@@ -120,4 +120,61 @@ public class UserController : ControllerBase
         _logger.LogInformation("Получен список бизнесов");
         return Ok(await _userService.GetBusinesses());
     }
+    
+    /// <summary>
+    ///     Get all businesses by company
+    /// </summary>
+    /// <remarks>
+    ///     Sample request:
+    ///     Get /User/GetBusinessesByCompany
+    /// </remarks>
+    /// <returns>
+    ///     200 OK 
+    /// </returns>
+    /// <response code="200">Got all businesses by company.</response>
+    [HttpGet("GetBusinessesByCompany")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetBusinessesByCompany(Guid id)
+    {
+        _logger.LogInformation("Получен список бизнесов");
+        return Ok(await _userService.GetBusinessesByCompany(id));
+    }
+    
+    /// <summary>
+    ///     Get expert views by business
+    /// </summary>
+    /// <remarks>
+    ///     Sample request:
+    ///     Get /User/GetExpertViewsByBusiness
+    /// </remarks>
+    /// <returns>
+    ///     200 OK 
+    /// </returns>
+    /// <response code="200">Got all expert views by company.</response>
+    [HttpGet("GetExpertViewsByBusiness")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetExpertViewsByBusiness(Guid id)
+    {
+        _logger.LogInformation("Получен список мнений");
+        return Ok(await _userService.GetExpertViewsByBusiness(id));
+    }
+    
+    /// <summary>
+    ///     Get expert views by expert
+    /// </summary>
+    /// <remarks>
+    ///     Sample request:
+    ///     Get /User/GetExpertViewsByExpert
+    /// </remarks>
+    /// <returns>
+    ///     200 OK 
+    /// </returns>
+    /// <response code="200">Got all expert views by expert.</response>
+    [HttpGet("GetExpertViewsByExpert")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetExpertViewsByExpert(Guid id)
+    {
+        _logger.LogInformation("Получен список мнений");
+        return Ok(await _userService.GetExpertViewsByExpert(id));
+    }
 }

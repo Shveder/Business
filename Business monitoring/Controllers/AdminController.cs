@@ -131,6 +131,25 @@ public class AdminController : ControllerBase
     }
     
     /// <summary>
+    ///     Get business by id
+    /// </summary>
+    /// <remarks>
+    ///     Sample request:
+    ///     Get /Admin/GetBusinessById
+    /// </remarks>
+    /// <returns>
+    ///     200 OK 
+    /// </returns>
+    /// <response code="200">Got business by id.</response>
+    [HttpGet("GetBusinessById")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetBusinessById(Guid id)
+    {
+        _logger.LogInformation("Информация о бизнесе получена");
+        return Ok(await _adminService.GetBusinessById(id));
+    }
+    
+    /// <summary>
     ///     Delete user from list
     /// </summary>
     /// <remarks>
