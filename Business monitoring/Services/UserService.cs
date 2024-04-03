@@ -7,6 +7,7 @@ using Business_monitoring.Models;
 using Business_monitoring.Models.Interfaces;
 using Business_monitoring.Repository.Interfaces;
 using Business_monitoring.Services.Interfaces;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 
@@ -387,5 +388,47 @@ public class UserService : IUserService
     {
         var expert = GetExpertById(id);
         return await Task.FromResult(_repository.Get<ExpertView>(view =>  view.Expert == expert).Include(b => b.Business));
+    }
+
+    public async Task BuyExpertView(BuyExpertViewRequest request)
+    {
+        if (IsExpertViewBought(request))
+            throw new IncorrectDataException("Доступ к мнениям уже куплен");
+        var business = GetBusinessById(request.BusinessId);
+        var user = GetUserById(request.UserId);
+        if(user.Balance < business.ExpertViewPrice)
+            throw new IncorrectDataException("На балансе пользоавтеля недостаточно средств");
+
+        var purchase = new PurchaceOfView()
+        {
+            User = user,
+            Business = business,
+            Price = business.ExpertViewPrice
+        };
+        user.Balance -= business.ExpertViewPrice;
+        user.DateUpdated = DateTime.UtcNow;
+
+        await _repository.Update(user);
+        await _repository.Add(purchase);
+        await _repository.SaveChangesAsync();
+    }
+    private UserModel GetUserById(Guid id)
+    {
+        var user = _repository.Get<UserModel>(model => model.Id == id).FirstOrDefault();
+        if (user == null)
+            throw new IncorrectDataException("Нет пользователя с таким id");
+        return user;
+    }
+    private bool IsExpertViewBought(BuyExpertViewRequest request)
+    {
+        var business = GetBusinessById(request.BusinessId);
+        var user = GetUserById(request.UserId);
+        var purchase = _repository.Get<PurchaceOfView>(p => p.Business == business && p.User == user).FirstOrDefault();
+        return purchase != null;
+    }
+
+    public async Task<bool> GetExpertViewBoughtStatus(Guid userId, Guid businessId)
+    {
+        return IsExpertViewBought(new BuyExpertViewRequest(userId,businessId));
     }
 }

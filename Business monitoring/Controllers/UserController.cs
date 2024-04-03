@@ -177,4 +177,46 @@ public class UserController : ControllerBase
         _logger.LogInformation("Получен список мнений");
         return Ok(await _userService.GetExpertViewsByExpert(id));
     }
+    
+    /// <summary>
+    ///     Buy expert view
+    /// </summary>
+    /// <remarks>
+    ///     Sample request:
+    ///     Post /User/BuyExpertView
+    /// </remarks>
+    /// <returns>
+    ///     200 OK 
+    /// </returns>
+    /// <response code="200">Buys expert view for user.</response>
+    /// <response code="422">Invalid data.</response>
+    [HttpPost("BuyExpertView")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+    public async Task<IActionResult> BuyExpertView([FromBody] BuyExpertViewRequest request)
+    {
+        await _userService.BuyExpertView(request);
+        _logger.LogInformation("Доступ к мнениям экспертов получен");
+        return Ok("Доступ к мнениям экспертов получен");
+    }
+    
+    /// <summary>
+    ///     Is expert view bought
+    /// </summary>
+    /// <remarks>
+    ///     Sample request:
+    ///     Get /User/IsExpertViewBought
+    /// </remarks>
+    /// <returns>
+    ///     200 OK 
+    /// </returns>
+    /// <response code="200">Got status of purchase.</response>
+    [HttpGet("IsExpertViewBought")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> IsExpertViewBought(Guid userId, Guid businessId)
+    {
+        _logger.LogInformation("Результат покупки получен");
+        return Ok(await _userService.GetExpertViewBoughtStatus(userId, businessId));
+    }
+    
 }
