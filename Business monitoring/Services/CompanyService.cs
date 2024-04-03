@@ -48,4 +48,31 @@ public class CompanyService : ICompanyService
             throw new IncorrectDataException("Нет компании с таким id");
         return company;
     }
+    private Business GetBusinessById(Guid id)
+    {
+        var business = _repository.Get<Business>(model => model.Id == id).FirstOrDefault();
+        if (business == null)
+            throw new IncorrectDataException("Нет бизнеса с таким id");
+        return business;
+    }
+
+    public async Task ChangeBusinessPrice(ChangeBusinessPriceRequest request)
+    {
+        if (request.NewPrice < 0)
+            throw new IncorrectDataException("Цена должна быть положительной");
+        var business = GetBusinessById(request.BusinessId);
+
+        var recentPrice = new RecentPricesOfBusiness()
+        {
+            Business = business,
+            Price = request.NewPrice
+        };
+        business.PriceOfCompany = request.NewPrice;
+        business.DateUpdated = DateTime.UtcNow;
+
+        await _repository.Update(business);
+        await _repository.Add(recentPrice);
+        await _repository.SaveChangesAsync();
+
+    }
 }

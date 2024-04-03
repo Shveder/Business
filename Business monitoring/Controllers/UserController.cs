@@ -219,4 +219,23 @@ public class UserController : ControllerBase
         return Ok(await _userService.GetExpertViewBoughtStatus(userId, businessId));
     }
     
+    /// <summary>
+    ///     Get recent prices of business
+    /// </summary>
+    /// <remarks>
+    ///     Sample request:
+    ///     Get /User/GetPricesOfBusinesses
+    /// </remarks>
+    /// <returns>
+    ///     200 OK 
+    /// </returns>
+    /// <response code="200">Got recent prices.</response>
+    [HttpGet("GetPricesOfBusinesses")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetPricesOfBusinesses( Guid businessId)
+    {
+        _logger.LogInformation("Предыдущие цены получены");
+        return Ok(await _userService.GetPricesOfBusinesses(businessId));
+    }
+    
 }

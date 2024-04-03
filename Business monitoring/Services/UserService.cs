@@ -431,4 +431,10 @@ public class UserService : IUserService
     {
         return IsExpertViewBought(new BuyExpertViewRequest(userId,businessId));
     }
+    
+    public Task<IQueryable<RecentPricesOfBusiness>> GetPricesOfBusinesses(Guid id)
+    {
+        var business = GetBusinessById(id);
+        return Task.FromResult(_repository.Get<RecentPricesOfBusiness>(model => model.Business == business));
+    }
 }
