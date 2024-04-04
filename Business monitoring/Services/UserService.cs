@@ -437,4 +437,5 @@ public class UserService : IUserService
         var business = GetBusinessById(id);
         return Task.FromResult(_repository.Get<RecentPricesOfBusiness>(model => model.Business == business));
     }
+    
 }

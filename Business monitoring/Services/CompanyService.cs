@@ -75,4 +75,44 @@ public class CompanyService : ICompanyService
         await _repository.SaveChangesAsync();
 
     }
+
+    public async Task AddGainOfCompany(AddGainRequest request)
+    {
+        var business = GetBusinessById(request.BusinessId);
+        
+        var gains = await GetGainsOfBusinesses(request.BusinessId);
+        if (!int.TryParse(request.Year, out int year))
+        {
+            throw new IncorrectDataException("Некорректный формат года.");
+        }
+
+        var currentYear = DateTime.Now.Year;
+    
+        // Проверка, чтобы год не был больше текущего
+        if (year > currentYear)
+        {
+            throw new IncorrectDataException("Указанный год больше текущего года.");
+        }
+
+        if (gains.Any(g => g.Year == request.Year))
+            throw new IncorrectDataException("Год уже существует в списке результатов прибыли для данного бизнеса.");
+
+        var gain = new GainsOfCompany()
+        {
+            Business = business,
+            Year = request.Year,
+            Gain = request.Gain
+        };
+
+        await _repository.Add(gain);
+        await _repository.SaveChangesAsync();
+
+    }
+    
+    public Task<IQueryable<GainsOfCompany>> GetGainsOfBusinesses(Guid id)
+    {
+        var business = GetBusinessById(id);
+        return Task.FromResult(_repository.Get<GainsOfCompany>(model => model.Business == business));
+    }
+    
 }

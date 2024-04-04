@@ -237,5 +237,5 @@ public class UserController : ControllerBase
         _logger.LogInformation("Предыдущие цены получены");
         return Ok(await _userService.GetPricesOfBusinesses(businessId));
     }
-    
+  
 }

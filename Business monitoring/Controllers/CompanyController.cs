@@ -59,4 +59,46 @@ public class CompanyController : ControllerBase
         return Ok($"Цена бизнеса измененена на {request.NewPrice}");
     }
     
+    /// <summary>
+    ///     Add gain of business
+    /// </summary>
+    /// <remarks>
+    ///     Sample request:
+    ///     Post /Company/AddGainOfCompany
+    /// </remarks>
+    /// <returns>
+    ///     200 OK 
+    /// </returns>
+    /// <response code="200">Gain is added.</response>
+    /// <response code="422">Invalid input data.</response>
+    [HttpPost("AddGainOfCompany")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+    public async Task<IActionResult> AddGainOfCompany([FromBody] AddGainRequest request)
+    {
+        await _companyService.AddGainOfCompany(request);
+        _logger.LogInformation("Размер прибыли добавлен");
+        return Ok("Размер прибыли добавлен");
+    }
+      
+    /// <summary>
+    ///     Get recent gains of business
+    /// </summary>
+    /// <remarks>
+    ///     Sample request:
+    ///     Get /Company/GetGainsOfBusinesses
+    /// </remarks>
+    /// <returns>
+    ///     200 OK 
+    /// </returns>
+    /// <response code="200">Got recent gains.</response>
+    [HttpGet("GetGainsOfBusinesses")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetGainsOfBusinesses( Guid businessId)
+    {
+        _logger.LogInformation("Прибыль прошлых лет получена");
+        return Ok(await _companyService.GetGainsOfBusinesses(businessId));
+    }
+
+    
 }
