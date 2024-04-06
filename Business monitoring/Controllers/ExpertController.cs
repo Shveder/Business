@@ -4,6 +4,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Business_monitoring.Controllers;
 
+[ApiController]
+[Route("[controller]")]
+[Produces("application/json")]
 public class ExpertController : ControllerBase
 {
     private readonly ILogger<ExpertController> _logger;

@@ -18,7 +18,9 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IAdminService, AdminService>();
 builder.Services.AddScoped<ICompanyService, CompanyService>();
 builder.Services.AddScoped<IExpertService, ExpertService>();
+builder.Services.AddScoped<ISubscriptionService, SubscriptionService>();
 builder.Services.AddScoped<IDbRepository, DbRepository>();
+
 
 builder.Services.AddDbContext<Context>(options => 
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));

@@ -9,10 +9,12 @@ namespace Business_monitoring.Services;
 public class CompanyService : ICompanyService
 {
     private readonly IDbRepository _repository;
+    private readonly ISubscriptionService _subscriptionService;
 
-    public CompanyService(IDbRepository repository)
+    public CompanyService(IDbRepository repository, ISubscriptionService subscriptionService)
     {
         _repository = repository;
+        _subscriptionService = subscriptionService;
     }
 
     public async Task AddBusiness(AddBusinessRequest request)
@@ -69,11 +71,19 @@ public class CompanyService : ICompanyService
         };
         business.PriceOfCompany = request.NewPrice;
         business.DateUpdated = DateTime.UtcNow;
+    
+        var subs = await _subscriptionService.GetAllSubscribers(business.Id);
 
+        foreach (var sub in subs)
+        {
+            await _subscriptionService.Notify(sub.User.Id,
+                $"Цена бизнеса {business.Name}" +
+                $" изменилась и составила {business.PriceOfCompany}");
+        }
+    
         await _repository.Update(business);
         await _repository.Add(recentPrice);
         await _repository.SaveChangesAsync();
-
     }
 
     public async Task AddGainOfCompany(AddGainRequest request)
@@ -115,4 +125,4 @@ public class CompanyService : ICompanyService
         return Task.FromResult(_repository.Get<GainsOfCompany>(model => model.Business == business));
     }
     
-}
+}  

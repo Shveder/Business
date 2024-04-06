@@ -32,8 +32,7 @@ public class UserController : ControllerBase
     /// <response code="422">Invalid password data</response>
     [HttpPut("ChangePassword")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
-    public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest request)
+    async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest request)
     {
         await _userService.ChangePassword(request);
         _logger.LogInformation($"Пользователь с id {request.Id} успешно изменил пароль");
@@ -237,5 +236,45 @@ public class UserController : ControllerBase
         _logger.LogInformation("Предыдущие цены получены");
         return Ok(await _userService.GetPricesOfBusinesses(businessId));
     }
+    
+    /// <summary>
+    ///     Get notifications
+    /// </summary>
+    /// <remarks>
+    ///     Sample request:
+    ///     Get /User/GetNotifications
+    /// </remarks>
+    /// <returns>
+    ///     200 OK 
+    /// </returns>
+    /// <response code="200">Got notifications.</response>
+    [HttpGet("GetNotifications")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetNotifications(Guid userId)
+    {
+        _logger.LogInformation("Уведомления получены");
+        return Ok(await _userService.GetUserNotifications(userId));
+    }
+    
+    /// <summary>
+    ///     Delete notification
+    /// </summary>
+    /// <remarks>
+    ///     Sample request:
+    ///     Delete /User/DeleteNotificaton
+    /// </remarks>
+    /// <returns>
+    ///     200 OK 
+    /// </returns>
+    /// <response code="200">Delete notification.</response>
+    [HttpDelete("DeleteNotificaton")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> DeleteNotificaton(Guid notifId)
+    {
+        await _userService.DeleteNotification(notifId);
+        _logger.LogInformation("Уведомление удалено");
+        return Ok("Уведомление удалено");
+    }
+    
   
 }

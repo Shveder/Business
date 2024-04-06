@@ -37,61 +37,62 @@ public class UserService : IUserService
             throw new IncorrectDataException("Длина логина должна быть от 4 до 32 символов");
         if(request.Password.Length is < 4 or > 32)
             throw new IncorrectDataException("Длина пароля должна быть от 4 до 32 символов");
+        switch (request.Role)
+        {
+            case 1:
+                var user = new UserModel
+                {
+                    Id = Guid.NewGuid(),
+                    Login = request.Login,
+                    Password = request.Password,
+                    Salt = "123",
+                    Role = 1,
+                    Balance = 0,
+                    IsDeleted = false,
+                    IsBlocked = false
+                };
+                await _repository.Add(user);
+                await _repository.SaveChangesAsync();
+                _logger.LogInformation($"User created (Login: {request.Login})");
+            break;
+            case 2:
+                
+                    var company = new Company()
+                    {
+                        Id = Guid.NewGuid(),
+                        Login = request.Login,
+                        Password = request.Password,
+                        Salt = "123",
+                        Email = request.Email,
+                        Phone = request.Phone,
+                        IsDeleted = false,
+                        IsBlocked = false
+                    };
+                    if (!IsValidPhoneNumber(request.Phone))
+                        throw new IncorrectDataException("Неверный формат номера телефона");
+                    if (!IsValidEmail(request.Email))
+                        throw new IncorrectDataException("Неверный формат email");
+                    await _repository.Add(company);
+                    await _repository.SaveChangesAsync();
+                    _logger.LogInformation($"Company created (Login: {request.Login})");
+                break;
 
-        if (request.Role == 1)
-        {
-            var user = new UserModel
-            {
-                Id = Guid.NewGuid(),
-                Login = request.Login,
-                Password = request.Password,
-                Salt = "123",
-                Role = 1,
-                Balance = 0,
-                IsDeleted = false,
-                IsBlocked = false
-            };
-            await _repository.Add(user);
-            await _repository.SaveChangesAsync();
-            _logger.LogInformation($"User created (Login: {request.Login})");
-        }
-        if (request.Role == 2)
-        {
-            var company = new Company()
-            {
-                Id = Guid.NewGuid(),
-                Login = request.Login,
-                Password = request.Password,
-                Salt = "123",
-                Email = request.Email,
-                Phone = request.Phone,
-                IsDeleted = false,
-                IsBlocked = false
-            };
-            if (!IsValidPhoneNumber(request.Phone))
-                throw new IncorrectDataException("Неверный формат номера телефона");
-            if (!IsValidEmail(request.Email))
-                throw new IncorrectDataException("Неверный формат email");
-            await _repository.Add(company);
-            await _repository.SaveChangesAsync();
-            _logger.LogInformation($"Company created (Login: {request.Login})");
-        }
-        
-        if (request.Role == 3)
-        {
-            var expert = new Expert()
-            {
-                Id = Guid.NewGuid(),
-                Login = request.Login,
-                Password = request.Password,
-                Salt = "123",
-                Level = 1,
-                IsDeleted = false,
-                IsBlocked = false
-            };
-            await _repository.Add(expert);
-            await _repository.SaveChangesAsync();
-            _logger.LogInformation($"Expert created (Login: {request.Login})");
+                case 3:
+                
+                    var expert = new Expert()
+                    {
+                        Id = Guid.NewGuid(),
+                        Login = request.Login,
+                        Password = request.Password,
+                        Salt = "123",
+                        Level = 1,
+                        IsDeleted = false,
+                        IsBlocked = false
+                    };
+                    await _repository.Add(expert);
+                    await _repository.SaveChangesAsync();
+                    _logger.LogInformation($"Expert created (Login: {request.Login})");
+                break;
         }
     }
 
@@ -125,10 +126,7 @@ public class UserService : IUserService
         }
         if (company != null)
             return company;
-        if (expert != null)
-            return expert;
-
-        return null!;
+        return expert ?? null!;
     }
     private async Task AddLoginHistory(UserModel user)
     {
@@ -427,9 +425,9 @@ public class UserService : IUserService
         return purchase != null;
     }
 
-    public async Task<bool> GetExpertViewBoughtStatus(Guid userId, Guid businessId)
+    public Task<bool> GetExpertViewBoughtStatus(Guid userId, Guid businessId)
     {
-        return IsExpertViewBought(new BuyExpertViewRequest(userId,businessId));
+        return Task.FromResult(IsExpertViewBought(new BuyExpertViewRequest(userId,businessId)));
     }
     
     public Task<IQueryable<RecentPricesOfBusiness>> GetPricesOfBusinesses(Guid id)
@@ -437,5 +435,16 @@ public class UserService : IUserService
         var business = GetBusinessById(id);
         return Task.FromResult(_repository.Get<RecentPricesOfBusiness>(model => model.Business == business));
     }
-    
+
+    public Task<IQueryable<Notification>> GetUserNotifications(Guid userId)
+    {
+        var user = GetUserById(userId);
+        return Task.FromResult(_repository.Get<Notification>(notification => notification.User == user));
+    }
+
+    public async Task DeleteNotification(Guid id)
+    {
+        await _repository.Delete<Notification>(id);
+        await _repository.SaveChangesAsync();
+    }
 }

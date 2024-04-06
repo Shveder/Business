@@ -19,5 +19,7 @@ public interface IUserService
     public Task BuyExpertView(BuyExpertViewRequest request);
     public Task<bool> GetExpertViewBoughtStatus(Guid userId, Guid businessId);
     public Task<IQueryable<RecentPricesOfBusiness>> GetPricesOfBusinesses(Guid id);
+    public Task<IQueryable<Notification>> GetUserNotifications(Guid userId);
+    public Task DeleteNotification(Guid id);
     
 }
