@@ -8,6 +8,7 @@ public class Business : BaseEntity
     [Required] public string Name { get; set; }
     [Required] public double PriceOfCompany { get; set; }
     [Required] public int NumberOfShares { get; set; }
+    [Required] public int NumberToSell { get; set; }
     [Required] public double PriceOfShare { get; set; }
     [Required] public double ExpertViewPrice { get; set; }
     [Required] public Company Company { get; set; }

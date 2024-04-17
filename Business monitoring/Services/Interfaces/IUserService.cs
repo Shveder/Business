@@ -21,5 +21,13 @@ public interface IUserService
     public Task<IQueryable<RecentPricesOfBusiness>> GetPricesOfBusinesses(Guid id);
     public Task<IQueryable<Notification>> GetUserNotifications(Guid userId);
     public Task DeleteNotification(Guid id);
-    
+    public Task BuySharesOfCompany(BuySharesOfCompanyRequest request);
+    public Task<IQueryable<Owners>> GetOwnersOfBusiness(Guid businessId);
+    public Task<IQueryable<Owners>> GetOwnershipsByUser(Guid userId);
+    public Task AddOffer(AddOfferRequest request);
+    public Task BuyOffer(BuyOfferRequest request);
+    public Task DeleteOffer(Guid offerId);
+    public Task<IQueryable<Offer>> GetAllOffers();
+    public Task<IQueryable<Offer>> GetOffersByBusiness(Guid businessId);
+    public Task<IQueryable<Offer>> GetOffersByUser(Guid userId);
 }

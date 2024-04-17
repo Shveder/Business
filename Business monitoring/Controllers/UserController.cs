@@ -276,5 +276,179 @@ public class UserController : ControllerBase
         return Ok("Уведомление удалено");
     }
     
-  
+    /// <summary>
+    ///     Buy shares of company
+    /// </summary>
+    /// <remarks>
+    ///     Sample request:
+    ///     Post /User/BuySharesOfCompany
+    /// </remarks>
+    /// <returns>
+    ///     200 OK 
+    /// </returns>
+    /// <response code="200">Shares are bought.</response>
+    /// <response code="422">Invalid data or lack of money.</response>
+    [HttpPost("BuySharesOfCompany")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+    public async Task<IActionResult> BuySharesOfCompany([FromBody] BuySharesOfCompanyRequest request)
+    {
+        await _userService.BuySharesOfCompany(request);
+        _logger.LogInformation("Акции куплены");
+        return Ok("Акции куплены");
+    }
+    
+    /// <summary>
+    ///     Get owners by business
+    /// </summary>
+    /// <remarks>
+    ///     Sample request:
+    ///     Get /User/GetOwnersOfBusiness
+    /// </remarks>
+    /// <returns>
+    ///     200 OK 
+    /// </returns>
+    /// <response code="200">Got owners.</response>
+    [HttpGet("GetOwnersOfBusiness")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetOwnersOfBusiness(Guid businessId)
+    {
+        _logger.LogInformation("Владельцы получены");
+        return Ok(await _userService.GetOwnersOfBusiness(businessId));
+    }
+    
+    /// <summary>
+    ///     Get ownerships by user
+    /// </summary>
+    /// <remarks>
+    ///     Sample request:
+    ///     Get /User/GetOwnershipsByUser
+    /// </remarks>
+    /// <returns>
+    ///     200 OK 
+    /// </returns>
+    /// <response code="200">Got ownerships.</response>
+    [HttpGet("GetOwnershipsByUser")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetOwnershipsByUser(Guid userId)
+    {
+        _logger.LogInformation("Бизнесы получены");
+        return Ok(await _userService.GetOwnershipsByUser(userId));
+    }
+    
+    /// <summary>
+    ///     Add offer
+    /// </summary>
+    /// <remarks>
+    ///     Sample request:
+    ///     Post /User/AddOffer
+    /// </remarks>
+    /// <returns>
+    ///     200 OK 
+    /// </returns>
+    /// <response code="200">Offer is added.</response>
+    [HttpPost("AddOffer")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> AddOffer([FromBody] AddOfferRequest request)
+    {
+        await _userService.AddOffer(request);
+        _logger.LogInformation("Предложение добавлено");
+        return Ok("Предложение добавлено");
+    }
+    /// <summary>
+    ///     Buy offer
+    /// </summary>
+    /// <remarks>
+    ///     Sample request:
+    ///     Post /User/BuyOffer
+    /// </remarks>
+    /// <returns>
+    ///     200 OK 
+    /// </returns>
+    /// <response code="200">Offer is bought.</response>
+    [HttpPost("BuyOffer")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> BuyOffer([FromBody] BuyOfferRequest request)
+    {
+        await _userService.BuyOffer(request);
+        _logger.LogInformation("Предложение куплено");
+        return Ok("Предложение куплено");
+    }
+    
+    /// <summary>
+    ///     Delete offer
+    /// </summary>
+    /// <remarks>
+    ///     Sample request:
+    ///     Delete /User/DeleteOffer
+    /// </remarks>
+    /// <returns>
+    ///     200 OK 
+    /// </returns>
+    /// <response code="200">Offer is deleted.</response>
+    [HttpDelete("DeleteOffer")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> DeleteOffer(Guid offerId)
+    {
+        await _userService.DeleteOffer(offerId);
+        _logger.LogInformation("Предложение удалено");
+        return Ok("Предложение удалено");
+    }
+    
+    /// <summary>
+    ///     Get offers
+    /// </summary>
+    /// <remarks>
+    ///     Sample request:
+    ///     Get /User/GetAllOffers
+    /// </remarks>
+    /// <returns>
+    ///     200 OK 
+    /// </returns>
+    /// <response code="200">Got all offers.</response>
+    [HttpGet("GetAllOffers")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetAllOffers()
+    {
+        _logger.LogInformation("Предложения получены");
+        return Ok(await _userService.GetAllOffers());
+    }
+    
+    /// <summary>
+    ///     Get offers by user
+    /// </summary>
+    /// <remarks>
+    ///     Sample request:
+    ///     Get /User/GetOffersByUser
+    /// </remarks>
+    /// <returns>
+    ///     200 OK 
+    /// </returns>
+    /// <response code="200">Got offers by user.</response>
+    [HttpGet("GetOffersByUser")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetOffersByUser(Guid userId)
+    {
+        _logger.LogInformation("Предложения получены");
+        return Ok(await _userService.GetOffersByUser(userId));
+    }
+    
+    /// <summary>
+    ///     Get offers by business
+    /// </summary>
+    /// <remarks>
+    ///     Sample request:
+    ///     Get /User/GetOffersByBusiness
+    /// </remarks>
+    /// <returns>
+    ///     200 OK 
+    /// </returns>
+    /// <response code="200">Got offers by business.</response>
+    [HttpGet("GetOffersByBusiness")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetOffersByBusiness(Guid businessId)
+    {
+        _logger.LogInformation("Предложения получены");
+        return Ok(await _userService.GetOffersByBusiness(businessId));
+    }
 }

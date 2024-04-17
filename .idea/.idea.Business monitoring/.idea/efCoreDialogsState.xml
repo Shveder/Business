@@ -7,6 +7,7 @@
         <entry key="Common:deb7440b-bd8e-4d27-91b1-22a760a3478f:dbContext" value="Business_monitoring.Data.Context" />
         <entry key="Common:noBuild" value="false" />
         <entry key="Common:outputFolder" value="Migrations" />
+        <entry key="Common:targetFramework" value="net6.0" />
         <entry key="Common:useDefaultConnection" value="true" />
       </map>
     </option>

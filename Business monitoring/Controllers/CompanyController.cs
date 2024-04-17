@@ -100,5 +100,26 @@ public class CompanyController : ControllerBase
         return Ok(await _companyService.GetGainsOfBusinesses(businessId));
     }
 
+    /// <summary>
+    ///     Set number of shares to sell
+    /// </summary>
+    /// <remarks>
+    ///     Sample request:
+    ///     Get /Company/SetNumberOfSharesToSell
+    /// </remarks>
+    /// <returns>
+    ///     200 OK 
+    /// </returns>
+    /// <response code="200">Number is set.</response>
+    /// <response code="422">Invalid number of shares.</response> 
     
+    [HttpPut("SetNumberOfSharesToSell")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+    public async Task<IActionResult> SetNumberOfSharesToSell([FromBody] SetNumberOfSharesRequest request)
+    {
+        _logger.LogInformation("Количество акций установлено");
+        await _companyService.SetNumberOfSharesToSell(request);
+        return Ok("Количество акций установлено");
+    }
 }

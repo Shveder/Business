@@ -36,6 +36,7 @@ public class CompanyService : ICompanyService
                 PriceOfShare = request.PriceOfShare,
                 ExpertViewPrice = request.ExpertViewPrice,
                 NumberOfShares = 1000,
+                NumberToSell = 0,
                 Company = company
             };
         await _repository.Add(business);
@@ -124,5 +125,15 @@ public class CompanyService : ICompanyService
         var business = GetBusinessById(id);
         return Task.FromResult(_repository.Get<GainsOfCompany>(model => model.Business == business));
     }
-    
+
+    public async Task SetNumberOfSharesToSell(SetNumberOfSharesRequest request)
+    {
+        var business = GetBusinessById(request.BusinessId);
+        if (request.NumberOfShares > business.NumberOfShares || request.NumberOfShares < 0)
+            throw new IncorrectDataException("Invalid number of Shares");
+        business.NumberToSell = request.NumberOfShares;
+        business.DateUpdated = DateTime.UtcNow;
+        await _repository.Update(business);
+        await _repository.SaveChangesAsync();
+    }
 }  

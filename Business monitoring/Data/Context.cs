@@ -24,6 +24,8 @@ namespace Business_monitoring.Data
         public DbSet<RecentPasswords> RecentPasswords { get; set; }
         public DbSet<RecentPricesOfBusiness> RecentPricesOfBusiness { get; set; }
         public DbSet<Subscription> Subscriptions { get; set; }
+        
+        public DbSet<Offer> Offers { get; set; }
 
         public Context(DbContextOptions<Context> options) : base(options)
         {
