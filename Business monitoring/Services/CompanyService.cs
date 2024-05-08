@@ -39,6 +39,12 @@ public class CompanyService : ICompanyService
                 NumberToSell = 0,
                 Company = company
             };
+        var priceOfShare = new PricesOfShares()
+        {
+            Business = business,
+            PriceOfShare = request.PriceOfShare
+        };
+        await _repository.Add(priceOfShare);
         await _repository.Add(business);
         await _repository.SaveChangesAsync();
             

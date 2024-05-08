@@ -503,7 +503,7 @@ public class UserService : IUserService
 
     }
     
-    private async void NotifySubs(string text, Guid businessId)
+    private async Task NotifySubs(string text, Guid businessId)
     {
         var subs = await _subscriptionService.GetAllSubscribers(businessId);
 
@@ -543,9 +543,13 @@ public class UserService : IUserService
         var business = GetBusinessById( request.BusinessId);
         var user = GetUserById(request.UserId);
         var ownership = GetOwnershipById(request.UserId, request.BusinessId);
+        int numberInOffers = GetNumberOfSharesOfUserToSell(request.UserId, request.BusinessId);
+        
         if (ownership == null)
             throw new IncorrectDataException("Пользователь не владеет этими акциями");
-        if (ownership.NumberOfShares < request.NumberOfShares)
+        if (request.NumberOfShares < 1)
+            throw new IncorrectDataException("Число акций на продажу должно быть больше 0");
+        if (ownership.NumberOfShares - numberInOffers < request.NumberOfShares)
             throw new IncorrectDataException("Недостаточно акций для продажи");
         if (request.PriceOfShare < 0)
             throw new IncorrectDataException("Неверная цена акции");
@@ -574,11 +578,24 @@ public class UserService : IUserService
             throw new IncorrectDataException("Нет предложения с таким id");
         return offer;
     }
+    
+    private int GetNumberOfSharesOfUserToSell(Guid userId, Guid businessId)
+    {
+        int number = 0;
+        var offers = _repository.Get<Offer>()
+            .Include(o => o.User).Include(o => o.Business);
+        foreach (var offer in offers)
+        {
+            number += offer.NumberOfShares;
+        }
+        return number;
+    }
     public async Task BuyOffer(BuyOfferRequest request)
     {
         var user = GetUserById(request.UserId);
         var offer = GetOfferById(request.OfferId);
         var business = GetBusinessById(offer.Business.Id);
+        
         double fullPrice = offer.NumberOfShares * offer.PriceForShare;
         if (user.Balance < fullPrice)
             throw new IncorrectDataException("На балансе недостаточно средств для покупки предложения");
@@ -608,29 +625,36 @@ public class UserService : IUserService
 
             if (offer.PriceForShare > business.PriceOfShare)
             {
-                business.PriceOfShare += offer.PriceForShare / 10;
+                business.PriceOfShare += offer.PriceForShare * offer.NumberOfShares / 500;
             }
             else
             {
-                business.PriceOfShare -= offer.PriceForShare / 10;
+                business.PriceOfShare -= offer.PriceForShare * offer.NumberOfShares / 500;
             }
 
             offer.User.Balance += fullPrice;
+            
+            await NotifySubs($"Пользователь {user.Login}" +
+                       $" купил {offer.NumberOfShares} акций компании {offer.Business.Name} у пользователя {offer.User.Login}." +
+                       $"В связи с этим цена акции изменилась и составила {business.PriceOfShare}"
+                , offer.Business.Id);
+
+            var priceOfShare = new PricesOfShares()
+            {
+                Business = business,
+                PriceOfShare = business.PriceOfShare
+            };
+            await _repository.Add(priceOfShare);
             await _repository.Update(offer.User);
             await _repository.Update(business);
             await _repository.Update(user);
             await _repository.Update(owner);
             await _repository.Delete<Offer>(offer.Id);
-          
-
-            NotifySubs($"Пользователь {user.Login}" +
-                       $" купил {offer.NumberOfShares} акций компании {offer.Business.Name} у пользователя {offer.User.Login}." +
-                       $"В связи с этим цена акции изменилась и составила {business.PriceOfShare}"
-                , offer.Business.Id);
             await _repository.SaveChangesAsync();
             return;  
         }
 
+        
         var newOwner = new Owners()
         {
             NumberOfShares = offer.NumberOfShares,
@@ -658,25 +682,30 @@ public class UserService : IUserService
         }
         else
         {
-            business.PriceOfShare -= offer.PriceForShare / 10;
+            business.PriceOfShare -= (offer.PriceForShare / 10);
         }
         offer.User.Balance += fullPrice;
+        
+        await NotifySubs($"Пользователь {user.Login}" +
+                   $" купил {offer.NumberOfShares} акций компании {offer.Business.Name} у пользователя {offer.User.Login}." +
+                   $"В связи с этим цена акции изменилась и составила {business.PriceOfShare}"
+            , offer.Business.Id);
+        
+        var priceOfShare1 = new PricesOfShares()
+        {
+            Business = business,
+            PriceOfShare = business.PriceOfShare
+        };
+        await _repository.Add(priceOfShare1);
         await _repository.Update(offer.User);
         await _repository.Update(business);
         await _repository.Update(user);
         await _repository.Add(newOwner);
         await _repository.Delete<Offer>(offer.Id);
-       
-
-        NotifySubs($"Пользователь {user.Login}" +
-                   $" купил {offer.NumberOfShares} акций компании {offer.Business.Name} у пользователя {offer.User.Login}." +
-                   $"В связи с этим цена акции изменилась и составила {business.PriceOfShare}"
-            , offer.Business.Id);
         await _repository.SaveChangesAsync();
     }
     public async Task<IQueryable<Offer>> GetAllOffers()
     {
-
         return await Task.FromResult(_repository.Get<Offer>()
             .Include(o=>o.User).Include(o=>o.Business));
     }
