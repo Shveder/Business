@@ -60,4 +60,22 @@ public class SubscriptionController: ControllerBase
         _logger.LogInformation("Подписка удалена");
         return Ok("Подписка удалена");
     }
+    
+    /// <summary>
+    ///     Get is subscribed
+    /// </summary>
+    /// <remarks>
+    ///     Sample request:
+    ///     Delete /Subscription/GetIsSubscribed
+    /// </remarks>
+    /// <returns>
+    ///     200 OK 
+    /// </returns>
+    /// <response code="200">Got is suscribed.</response>
+    [HttpGet("GetIsSubscribed")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetIsSubscribed(Guid userId, Guid businessId)
+    {
+        return Ok(_subscriptionService.GetIsSubscribed(new SubscriptionRequest(userId, businessId)));
+    }
 }

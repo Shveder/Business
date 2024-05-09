@@ -59,8 +59,7 @@ public class SubscriptionService : ISubscriptionService
         await _repository.Add(notification);
         await _repository.SaveChangesAsync();
     }
-
-    private bool GetIsSubscribed(SubscriptionRequest request)
+    public bool GetIsSubscribed(SubscriptionRequest request)
     {
         var user = GetUserById(request.UserId);
         var business = GetBusinessById(request.BusinessId);

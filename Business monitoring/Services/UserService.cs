@@ -451,6 +451,11 @@ public class UserService : IUserService
         var user = GetUserById(userId);
         return Task.FromResult(_repository.Get<Notification>(notification => notification.User == user));
     }
+    public int GetCountOfNotifications(Guid userId)
+    {
+        var user = GetUserById(userId);
+        return _repository.Get<Notification>(notification => notification.User == user).Count();
+    }
 
     public async Task DeleteNotification(Guid id)
     {
@@ -730,5 +735,18 @@ public class UserService : IUserService
         var user = GetUserById(userId);
         return await Task.FromResult(_repository.Get<Offer>(offer => offer.User == user)
             .Include(offer=>offer.Business));
+    }
+
+    public async Task ChangeLogin(ChangeLoginRequest request)
+    {
+        var user = GetUserById(request.Id);
+        if (request.NewLogin == user.Login)
+            throw new IncorrectDataException("Логин должен отличаться от старого");
+        if(await IsLoginUnique(request.NewLogin))
+            throw new IncorrectDataException("Пользователь с таким логином уже есть в системе");
+        
+        user.Login = request.NewLogin;
+        await _repository.Update(user);
+        await _repository.SaveChangesAsync();
     }
 }

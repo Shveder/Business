@@ -36,7 +36,28 @@ public class UserController : ControllerBase
     {
         await _userService.ChangePassword(request);
         _logger.LogInformation($"Пользователь с id {request.Id} успешно изменил пароль");
-        return Ok($"Пользователь с id {request.Id} успешно изменил пароль");
+        return Ok("Пароль изменен");
+    }
+    
+    /// <summary>
+    ///     Edit login
+    /// </summary>
+    /// <remarks>
+    ///     Sample request:
+    ///     PUT /User/ChangeLogin 
+    /// </remarks>
+    /// <returns>
+    ///     200 OK 
+    /// </returns>
+    /// <response code="200">Login changed.</response>
+    /// <response code="422">Invalid login data</response>
+    [HttpPut("ChangeLogin")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> ChangeLogin([FromBody] ChangeLoginRequest request)
+    {
+        await _userService.ChangeLogin(request);
+        _logger.LogInformation($"Пользователь с id {request.Id} успешно изменил логин");
+        return Ok("Логин изменен");
     }
     
     /// <summary>
@@ -273,6 +294,25 @@ public class UserController : ControllerBase
     {
         _logger.LogInformation("Уведомления получены");
         return Ok(await _userService.GetUserNotifications(userId));
+    }
+    
+    /// <summary>
+    ///     Get notifications count
+    /// </summary>
+    /// <remarks>
+    ///     Sample request:
+    ///     Get /User/GetCountOfNotifications
+    /// </remarks>
+    /// <returns>
+    ///     200 OK 
+    /// </returns>
+    /// <response code="200">Got notification count.</response>
+    [HttpGet("GetCountOfNotifications")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetCountOfNotifications(Guid userId)
+    {
+        _logger.LogInformation("Количество уведомлений получено");
+        return Ok(_userService.GetCountOfNotifications(userId));
     }
     
     /// <summary>

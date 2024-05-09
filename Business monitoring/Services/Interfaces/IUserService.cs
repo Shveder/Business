@@ -31,4 +31,6 @@ public interface IUserService
     public Task<IQueryable<Offer>> GetAllOffers();
     public Task<IQueryable<Offer>> GetOffersByBusiness(Guid businessId);
     public Task<IQueryable<Offer>> GetOffersByUser(Guid userId);
+    public int GetCountOfNotifications(Guid userId);
+    public Task ChangeLogin(ChangeLoginRequest request);
 }
