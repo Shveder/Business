@@ -69,8 +69,12 @@ public class CompanyService : ICompanyService
     {
         if (request.NewPrice < 0)
             throw new IncorrectDataException("Цена должна быть положительной");
-        var business = GetBusinessById(request.BusinessId);
 
+        var business = GetBusinessById(request.BusinessId);
+        const double tolerance = 0.001;
+        if (Math.Abs(request.NewPrice - business.PriceOfCompany) < tolerance)
+            throw new IncorrectDataException("Цена должна отличаться");
+        
         var recentPrice = new RecentPricesOfBusiness()
         {
             Business = business,

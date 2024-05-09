@@ -32,7 +32,7 @@ public class UserController : ControllerBase
     /// <response code="422">Invalid password data</response>
     [HttpPut("ChangePassword")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest request)
+    public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest request)
     {
         await _userService.ChangePassword(request);
         _logger.LogInformation($"Пользователь с id {request.Id} успешно изменил пароль");
@@ -118,6 +118,25 @@ public class UserController : ControllerBase
     {
         _logger.LogInformation("Получен список бизнесов");
         return Ok(await _userService.GetBusinesses());
+    }
+    
+    /// <summary>
+    ///     Get prices of shares
+    /// </summary>
+    /// <remarks>
+    ///     Sample request:
+    ///     Get /User/GetPricesOfShares
+    /// </remarks>
+    /// <returns>
+    ///     200 OK 
+    /// </returns>
+    /// <response code="200">Got all shares.</response>
+    [HttpGet("GetPricesOfShares")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetPricesOfShares(Guid id)
+    {
+        _logger.LogInformation("Получен список цен на акции");
+        return Ok(await _userService.GetPricesOfShares(id));
     }
     
     /// <summary>

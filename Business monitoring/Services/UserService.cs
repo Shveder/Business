@@ -174,6 +174,8 @@ public class UserService : IUserService
         var user = await _repository.Get<UserModel>(model => model.Id == request.Id).FirstOrDefaultAsync();
         if (!(request.PreviousPassword == user.Password))
             throw new IncorrectDataException("Пароль неверный!");
+        if (request.PreviousPassword == request.NewPassword)
+            throw new IncorrectDataException("Новый пароль должен отличаться от старого");
         if (request.NewPassword.Length is < 4 or > 32)
             throw new IncorrectDataException("Пароль должен быть больше 4 и меньше 32 символов!");
         
@@ -353,6 +355,12 @@ public class UserService : IUserService
     {
         return await Task.FromResult(_repository.GetAll<Business>().Include(b => b.Company));
     }
+
+    public async Task<IQueryable<PricesOfShares>> GetPricesOfShares(Guid businessId)
+    {
+        var business = GetBusinessById(businessId);
+        return await Task.FromResult(_repository.Get<PricesOfShares>(shares =>shares.Business == business));
+    }
     private Company GetCompanyById(Guid id)
     {
         var company = _repository.Get<Company>(model => model.Id == id).FirstOrDefault();
@@ -387,7 +395,7 @@ public class UserService : IUserService
     public async Task<IQueryable<ExpertView>> GetExpertViewsByExpert(Guid id)
     {
         var expert = GetExpertById(id);
-        return await Task.FromResult(_repository.Get<ExpertView>(view =>  view.Expert == expert).Include(b => b.Business));
+        return await Task.FromResult(_repository.Get<ExpertView>(view =>  view.Expert == expert).Include(b => b.Business).Include(b=>b.Business.Company));
     }
 
     public async Task BuyExpertView(BuyExpertViewRequest request)

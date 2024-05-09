@@ -20,7 +20,7 @@ namespace Business_monitoring.Services
         {
             try
             {
-                string location = role == 3 ? $"repetitor/{userId}" : $"expert/{userId}";
+                string location = role == 2 ? $"company/{userId}" : $"expert/{userId}";
                 string userDir = Path.Combine(_rootLocation, location);
                 Directory.CreateDirectory(userDir);
 
@@ -49,7 +49,7 @@ namespace Business_monitoring.Services
         {
             try
             {
-                string location = role == 3 ? $"repetitor/{userId}" : $"expert/{userId}";
+                string location = role == 2 ? $"company/{userId}" : $"expert/{userId}";
                 string filePath = Path.Combine(_rootLocation, location, $"{userId}.jpg");
 
                 if (!File.Exists(filePath))

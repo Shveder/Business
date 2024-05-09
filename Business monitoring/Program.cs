@@ -28,6 +28,7 @@ builder.Services.AddDbContext<Context>(options =>
 
 
 builder.Services.AddCors();
+builder.Services.AddCors(opt => opt.AddDefaultPolicy(b => b.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin()));
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -40,6 +41,8 @@ if (app.Environment.IsDevelopment())
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 app.UseHttpsRedirection();
+
+app.UseCors();
 
 app.UseAuthorization();
 

@@ -11,10 +11,12 @@ public interface IAdminService
     public Task<IQueryable<LoginHistory>> GetUserLoginHistory(Guid id);
     public Task<IQueryable<Deposits>> GetUserDeposits(Guid id);
     public Task<IQueryable<RecentPasswords>> GetUserPasswords(Guid id);
+    public Task<IQueryable<PurchaceOfView>>GetUserPurchases(Guid id);
     public Task<Business> GetBusinessById(Guid id);
     public Task DeleteUser(Guid id);
     public Task DeleteCompany(Guid id);
     public Task DeleteExpert(Guid id);
+    public Task DeleteBusiness(Guid id);
     public Task ChangeRole(ChangeRoleRequest request);
     public Task SetUserBlockStatus(ChangeStatusRequest request);
     public Task SetUserDeleteStatus(ChangeStatusRequest request);

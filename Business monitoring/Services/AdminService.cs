@@ -18,36 +18,41 @@ public class AdminService : IAdminService
         _repository = repository;
     }
 
-    public Task<IQueryable<UserModel>> GetAllUsers()
+    public async Task<IQueryable<UserModel>> GetAllUsers()
     {
-        return Task.FromResult(_repository.GetAll<UserModel>());
+        return await Task.FromResult(_repository.GetAll<UserModel>());
     }
 
-    public Task<IQueryable<Company>> GetAllCompanies()
+    public async Task<IQueryable<Company>> GetAllCompanies()
     {
-        return Task.FromResult(_repository.GetAll<Company>());
+        return await Task.FromResult(_repository.GetAll<Company>());
     }
 
-    public Task<IQueryable<Expert>> GetAllExperts()
+    public async Task<IQueryable<Expert>> GetAllExperts()
     {
-        return Task.FromResult(_repository.GetAll<Expert>());
+        return await Task.FromResult(_repository.GetAll<Expert>());
     }
 
-    public Task<IQueryable<LoginHistory>> GetUserLoginHistory(Guid id)
+    public async Task<IQueryable<LoginHistory>> GetUserLoginHistory(Guid id)
     {
         var user = GetUserById(id);
-        return Task.FromResult(_repository.Get<LoginHistory>(model => model.User == user));
+        return await Task.FromResult(_repository.Get<LoginHistory>(model => model.User == user));
     }
 
-    public Task<IQueryable<Deposits>> GetUserDeposits(Guid id)
+    public async Task<IQueryable<PurchaceOfView>> GetUserPurchases(Guid id)
     {
         var user = GetUserById(id);
-        return Task.FromResult(_repository.Get<Deposits>(model => model.User == user));
+        return await Task.FromResult(_repository.Get<PurchaceOfView>(model => model.User == user).Include(p => p.Business));
     }
-    public Task<IQueryable<RecentPasswords>> GetUserPasswords(Guid id)
+    public async Task<IQueryable<Deposits>> GetUserDeposits(Guid id)
     {
         var user = GetUserById(id);
-        return Task.FromResult(_repository.Get<RecentPasswords>(model => model.User == user));
+        return await Task.FromResult(_repository.Get<Deposits>(model => model.User == user));
+    }
+    public async Task<IQueryable<RecentPasswords>> GetUserPasswords(Guid id)
+    {
+        var user = GetUserById(id);
+        return await Task.FromResult(_repository.Get<RecentPasswords>(model => model.User == user));
     }
 
     public async Task DeleteUser(Guid id)
@@ -65,6 +70,11 @@ public class AdminService : IAdminService
     public async Task DeleteExpert(Guid id)
     {
         await _repository.Delete<Expert>(id);
+        await _repository.SaveChangesAsync();
+    }
+    public async Task DeleteBusiness(Guid id)
+    {
+        await _repository.Delete<Business>(id);
         await _repository.SaveChangesAsync();
     }
 
@@ -133,7 +143,7 @@ public class AdminService : IAdminService
 
     private UserModel GetUserById(Guid id)
     {
-        var user = _repository.Get<UserModel>(model => model.Id == id).FirstOrDefault();
+        var user =  _repository.Get<UserModel>(model => model.Id == id).FirstOrDefault();
         if (user == null)
             throw new IncorrectDataException("Нет пользователя с таким id");
         return user;
@@ -162,6 +172,6 @@ public class AdminService : IAdminService
 
     public async Task<Business> GetBusinessById(Guid id)
     {
-        return GetBusinessByBusinessId(id);
+        return  GetBusinessByBusinessId(id);
     }
 }

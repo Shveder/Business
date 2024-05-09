@@ -18,8 +18,8 @@ namespace Business_monitoring.Controllers
             _photoService = photoService;
         }
 
-        [HttpPost("HandleFileUpload")]
-        public async Task<IActionResult> HandleFileUpload([FromRoute] Guid userId, [FromForm] IFormFile file, int role)
+        [HttpPost("HandleFileUpload/{userId}")]
+        public async Task<IActionResult> HandleFileUpload([FromRoute] Guid userId, [FromForm] IFormFile file, [FromQuery] int role)
         {
             await _photoService.SavePhotoAsync(userId, file.OpenReadStream(), role);
             return Ok("Файл успешно загружен!");

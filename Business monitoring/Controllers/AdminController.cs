@@ -131,6 +131,25 @@ public class AdminController : ControllerBase
     }
     
     /// <summary>
+    ///     Get user purchases
+    /// </summary>
+    /// <remarks>
+    ///     Sample request:
+    ///     Get /Admin/GetUserPurchases
+    /// </remarks>
+    /// <returns>
+    ///     200 OK 
+    /// </returns>
+    /// <response code="200">Got list of user purchases.</response>
+    [HttpGet("GetUserPurchases")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetUserPurchases(Guid id)
+    {
+        _logger.LogInformation("Список покупок получен");
+        return Ok(await _adminService.GetUserPurchases(id));
+    }
+    
+    /// <summary>
     ///     Get business by id
     /// </summary>
     /// <remarks>
@@ -207,6 +226,26 @@ public class AdminController : ControllerBase
         _logger.LogInformation("Эксперт удален");
         await _adminService.DeleteExpert(id);
         return Ok("Эксперт удален");
+    }
+    
+    /// <summary>
+    ///     Delete business from list
+    /// </summary>
+    /// <remarks>
+    ///     Sample request:
+    ///     Delete /Admin/DeleteBusiness
+    /// </remarks>
+    /// <returns>
+    ///     200 OK 
+    /// </returns>
+    /// <response code="200">Deletes business.</response>
+    [HttpDelete("DeleteBusiness")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> DeleteBusiness(Guid id)
+    {
+        _logger.LogInformation("Бизнес удален");
+        await _adminService.DeleteBusiness(id);
+        return Ok("Бизнес удален");
     }
     
     /// <summary>

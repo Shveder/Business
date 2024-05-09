@@ -16,6 +16,7 @@ public interface IUserService
     public Task<IQueryable<Business>> GetBusinessesByCompany(Guid id);
     public Task<IQueryable<ExpertView>> GetExpertViewsByBusiness(Guid id);
     public Task<IQueryable<ExpertView>> GetExpertViewsByExpert(Guid id);
+    public Task<IQueryable<PricesOfShares>> GetPricesOfShares(Guid businessId);
     public Task BuyExpertView(BuyExpertViewRequest request);
     public Task<bool> GetExpertViewBoughtStatus(Guid userId, Guid businessId);
     public Task<IQueryable<RecentPricesOfBusiness>> GetPricesOfBusinesses(Guid id);
