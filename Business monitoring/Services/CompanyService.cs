@@ -141,7 +141,11 @@ public class CompanyService : ICompanyService
         var business = GetBusinessById(request.BusinessId);
         if (request.NumberOfShares > business.NumberOfShares || request.NumberOfShares < 0)
             throw new IncorrectDataException("Invalid number of Shares");
+        business.NumberOfShares += business.NumberToSell;
+
+        business.NumberOfShares -= request.NumberOfShares;
         business.NumberToSell = request.NumberOfShares;
+        
         business.DateUpdated = DateTime.UtcNow;
         await _repository.Update(business);
         await _repository.SaveChangesAsync();
