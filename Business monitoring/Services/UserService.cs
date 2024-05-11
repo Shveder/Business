@@ -1,5 +1,7 @@
 ﻿using System.Net.NetworkInformation;
 using System.Net.Sockets;
+using System.Security.Cryptography;
+using System.Text;
 using System.Text.RegularExpressions;
 using Business_monitoring.DTO;
 using Business_monitoring.Exceptions;
@@ -39,6 +41,12 @@ public class UserService : IUserService
             throw new IncorrectDataException("Длина логина должна быть от 4 до 32 символов");
         if(request.Password.Length is < 4 or > 32)
             throw new IncorrectDataException("Длина пароля должна быть от 4 до 32 символов");
+        
+        
+        request.Password = Hash(request.Password);
+        string salt = GetSalt();
+        request.Password = Hash(request.Password + salt);
+        
         switch (request.Role)
         {
             case 1:
@@ -47,7 +55,7 @@ public class UserService : IUserService
                     Id = Guid.NewGuid(),
                     Login = request.Login,
                     Password = request.Password,
-                    Salt = "123",
+                    Salt = salt,
                     Role = 1,
                     Balance = 0,
                     IsDeleted = false,
@@ -64,7 +72,7 @@ public class UserService : IUserService
                         Id = Guid.NewGuid(),
                         Login = request.Login,
                         Password = request.Password,
-                        Salt = "123",
+                        Salt = salt,
                         Email = request.Email,
                         Phone = request.Phone,
                         IsDeleted = false,
@@ -86,7 +94,7 @@ public class UserService : IUserService
                         Id = Guid.NewGuid(),
                         Login = request.Login,
                         Password = request.Password,
-                        Salt = "123",
+                        Salt = salt,
                         Level = 1,
                         IsDeleted = false,
                         IsBlocked = false
@@ -97,9 +105,42 @@ public class UserService : IUserService
                 break;
         }
     }
-
-    public async Task<IModels> Login(LoginRequest request)
+    private string GetSalt()
     {
+        byte[] salt = new byte[16];
+        using (var rng = new RNGCryptoServiceProvider())
+        {
+            rng.GetBytes(salt);
+        }
+        return Convert.ToBase64String(salt);
+    }
+
+    private string Hash(string inputString)
+    {
+        using (var sha256 = SHA256.Create())
+        {
+            byte[] bytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(inputString));
+            StringBuilder sb = new StringBuilder();
+            foreach (byte b in bytes)
+            {
+                sb.Append(b.ToString("x2"));
+            }
+            return sb.ToString();
+        }
+    }
+        public async Task<IModels> Login(LoginRequest request)
+    {
+        var user1 = await _repository
+            .Get<UserModel>(model => model.Login == request.Login)
+            .FirstOrDefaultAsync();
+        
+        if (user1 == null)
+            throw new IncorrectDataException("Неверный логин или пароль");
+        
+        request.Password = Hash(request.Password);
+        request.Password = Hash(request.Password + user1.Salt);
+        
+        
         var user = await _repository
             .Get<UserModel>(model => model.Login == request.Login && model.Password == request.Password)
             .FirstOrDefaultAsync();
@@ -109,25 +150,27 @@ public class UserService : IUserService
         var expert = await _repository
             .Get<Expert>(model => model.Login == request.Login && model.Password == request.Password)
             .FirstOrDefaultAsync();
-
+        
         if (user == null && company == null && expert == null)
             throw new IncorrectDataException("Неверный логин или пароль");
-
+        
         if ((user != null && user.IsBlocked) || (company != null && company.IsBlocked) ||
             (expert != null && expert.IsBlocked))
             throw new AuthorizationException("Аккаунт заблокирован");
-
+        
         if ((user != null && user.IsDeleted) || (company != null && company.IsDeleted) ||
             (expert != null && expert.IsDeleted))
             throw new AuthorizationException("Аккаунт удален");
-
+        
         if (user != null)
         {
             await AddLoginHistory(user);
             return user;
         }
+        
         if (company != null)
             return company;
+        
         return expert ?? null!;
     }
     private async Task AddLoginHistory(UserModel user)
@@ -172,12 +215,20 @@ public class UserService : IUserService
     public async Task ChangePassword(ChangePasswordRequest request)
     {
         var user = await _repository.Get<UserModel>(model => model.Id == request.Id).FirstOrDefaultAsync();
-        if (!(request.PreviousPassword == user.Password))
+
+        string prevPassword = request.PreviousPassword; 
+        prevPassword = Hash(prevPassword);
+        prevPassword = Hash(prevPassword + user?.Salt);
+        
+        if (!(prevPassword == user.Password))
             throw new IncorrectDataException("Пароль неверный!");
-        if (request.PreviousPassword == request.NewPassword)
+        if (prevPassword == request.NewPassword)
             throw new IncorrectDataException("Новый пароль должен отличаться от старого");
         if (request.NewPassword.Length is < 4 or > 32)
             throw new IncorrectDataException("Пароль должен быть больше 4 и меньше 32 символов!");
+        
+        request.NewPassword = Hash(request.NewPassword);
+        request.NewPassword = Hash(request.NewPassword + user?.Salt);
         
         user.Password = request.NewPassword;
         user.DateUpdated = DateTime.UtcNow;
@@ -489,8 +540,8 @@ public class UserService : IUserService
             await _repository.Update(owner);
             await _repository.SaveChangesAsync();
 
-            NotifySubs($"Пользователь {user.Login}" +
-                       $" докупил {request.NumberOfShares} акций компании {business.Name}", business.Id);
+            await NotifySubs($"Пользователь {user.Login}" +
+                             $" докупил {request.NumberOfShares} акций компании {business.Name}", business.Id);
 
             return;  
         }
