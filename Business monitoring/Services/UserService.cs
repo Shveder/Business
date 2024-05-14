@@ -133,13 +133,36 @@ public class UserService : IUserService
         var user1 = await _repository
             .Get<UserModel>(model => model.Login == request.Login)
             .FirstOrDefaultAsync();
+        var company1 = await _repository
+            .Get<Company>(model => model.Login == request.Login)
+            .FirstOrDefaultAsync();
+        var expert1 = await _repository
+            .Get<Expert>(model => model.Login == request.Login)
+            .FirstOrDefaultAsync();
         
-        if (user1 == null)
+        if (user1 == null && company1 == null && expert1 == null)
             throw new IncorrectDataException("Неверный логин или пароль");
         
-        request.Password = Hash(request.Password);
-        request.Password = Hash(request.Password + user1.Salt);
-        
+
+        if (user1 != null)
+        {
+            var trueUser = user1;
+            request.Password = Hash(request.Password);
+            request.Password = Hash(request.Password + trueUser.Salt);
+        }
+
+        if (company1 != null)
+        {
+            var trueUser = company1;
+            request.Password = Hash(request.Password);
+            request.Password = Hash(request.Password + trueUser.Salt);
+        }
+        if (expert1 != null)
+        {
+            var trueUser = expert1;
+            request.Password = Hash(request.Password);
+            request.Password = Hash(request.Password + trueUser.Salt);
+        }
         
         var user = await _repository
             .Get<UserModel>(model => model.Login == request.Login && model.Password == request.Password)
