@@ -632,6 +632,7 @@ public class UserService : IUserService
         var ownership = GetOwnershipById(request.UserId, request.BusinessId);
         int numberInOffers = GetNumberOfSharesOfUserToSell(request.UserId, request.BusinessId);
         
+        Console.WriteLine(ownership.NumberOfShares + " dqw " + numberInOffers + " dqw " + request.NumberOfShares);
         if (ownership == null)
             throw new IncorrectDataException("Пользователь не владеет этими акциями");
         if (request.NumberOfShares < 1)
@@ -669,7 +670,7 @@ public class UserService : IUserService
     private int GetNumberOfSharesOfUserToSell(Guid userId, Guid businessId)
     {
         int number = 0;
-        var offers = _repository.Get<Offer>()
+        var offers = _repository.Get<Offer>(offer => offer.Business.Id==businessId && offer.User.Id == userId)
             .Include(o => o.User).Include(o => o.Business);
         foreach (var offer in offers)
         {
